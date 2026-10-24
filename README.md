@@ -1,6 +1,6 @@
 # Echo Mirror
 
-A Creative Design course prototype: a mirror that responds to the duration, proximity, and repetition of self-observation. Designed for a laptop browser and webcam, with a clean, minimal interface.
+A mirror that responds to the duration, proximity, and repetition of self-observation. Designed for a laptop browser and webcam, with a clean, minimal interface.
 
 ## Run locally
 
