@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Echo Mirror interaction checks</title><body><h1>Interaction checks</h1><pre id="results">Running…</pre><script type="module">
+import { AttentionSession } from './engine.js';
+const results = [], assert = (condition, text) => { if (!condition) throw new Error(text); results.push('PASS: ' + text); };
+const advance = (s, seconds, attentive, proximity = 0) => { let result; for (let i = 0; i < seconds * 10; i++) result = s.update(.1, attentive, proximity); return result; };
+try {
+  const s = new AttentionSession();
+  advance(s, 4, true); assert(s.visibility > .99 && s.returns === 0, 'A first normal look stays clear and is not a return');
+  advance(s, 16, true); assert(s.visibility < .15 && s.longest > 19, 'Prolonged looking fades the reflection and records the longest look');
+  const total = s.total; advance(s, 2, false); assert(s.total === total && s.streak === 0 && s.visibility > .9, 'Looking away pauses accumulated time and restores visibility');
+  const returned = advance(s, .6, true); assert(s.returns === 1 && returned.returned, 'A deliberate return creates exactly one echo event');
+  advance(s, 1, true); assert(s.returns === 1, 'Continued looking does not add returns');
+  advance(s, .3, false); advance(s, 1, true); assert(s.returns === 1, 'A brief detection dropout does not count as a new visit');
+  advance(s, 2, true, 1); assert(s.fragmentation > .9, 'Closeness fragments the reflection');
+  advance(s, 2, true, 0); assert(s.fragmentation < .01, 'Stepping back restores the image');
+  const before = s.elapsed; s.update(30, false); assert(s.elapsed - before <= .251, 'A suspended frame does not add thirty seconds');
+  assert(s.summary('demo').mode === 'demo', 'Export labels simulated data');
+  document.getElementById('results').textContent = results.join('\n') + '\n\nAll checks passed.';
+} catch (error) { document.getElementById('results').textContent = results.join('\n') + '\nFAIL: ' + error.message; }
+</script></body></html>
